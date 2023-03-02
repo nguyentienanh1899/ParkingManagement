@@ -58,8 +58,8 @@ namespace ParkingManagement.BackendServer.Controllers
         [ClaimRequirement(FunctionCode.MANAGEMENT_PARKINGLOT, CommandCode.CREATE)]
         public async Task<IActionResult> PostParkingLot([FromBody] ParkingLotCreateRequest reuqest)
         {
-            _logger.LogInformation("Begin PostParkingLot API");
-            throw new Exception();
+           /* _logger.LogInformation("Begin PostParkingLot API");
+            throw new Exception();*/
             var parkingLot = new ParkingLot()
             {
                 ParkArea = reuqest.ParkArea,
@@ -70,7 +70,7 @@ namespace ParkingManagement.BackendServer.Controllers
                 TotalParkingSpace = reuqest.TotalParkingSpace,
 
             };
-            await _context.ParkingLots.AddAsync(parkingLot);
+            var a = await _context.ParkingLots.AddAsync(parkingLot);
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {

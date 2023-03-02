@@ -118,6 +118,15 @@ namespace ParkingManagement.BackendServer
             //Service for Attachment
             services.AddTransient<IStorageService, FileStorageService>();
 
+            //Distributed Cache
+            services.AddTransient<ICacheService, DistributedCacheService>();
+            services.AddDistributedSqlServerCache(o =>
+            {
+                o.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
+                o.SchemaName = "dbo";
+                o.TableName = "CacheTable";
+            });
+            //Swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Parking Lot API", Version = "v1" });

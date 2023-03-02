@@ -13,14 +13,16 @@ namespace ParkingManagement.BackendServer.Data.Entities
         public int Id { get; set; }
         [MaxLength(20)]
         public int ParkArea { get; set; }
+
         [Column(TypeName = "varchar(50)")]
         public string ParkName { get; set; }
+
         [Column(TypeName = "varchar(50)")]
         public string ParkPlace { get; set; }
         public int ParkPrice { get; set; }
-        [Column(TypeName = "varchar(50)")]
         public int? NumberOfCarsInTheParkingLot { get; set; }
         public int? TotalParkingSpace { get; set; }
+        [Column(TypeName = "varchar(50)")]
         public string ParkStatus { get; set; }
         public List<Car> Cars { get; set; }
         public List<Attachment> Attachments { get; set; }

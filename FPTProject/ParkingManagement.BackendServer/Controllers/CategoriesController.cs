@@ -6,9 +6,11 @@ using ParkingManagement.BackendServer.Constants;
 using ParkingManagement.BackendServer.Data;
 using ParkingManagement.BackendServer.Data.Entities;
 using ParkingManagement.BackendServer.Helpers;
+using ParkingManagement.BackendServer.Services;
 using ParkingManagement.ViewModels.Commons;
 using ParkingManagement.ViewModels.Contents.RequestModels;
 using ParkingManagement.ViewModels.Contents.ViewModels;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,9 +19,11 @@ namespace ParkingManagement.BackendServer.Controllers
     public class CategoriesController : BaseController
     {
         private readonly ApplicationDbContext _context;
-        public CategoriesController(ApplicationDbContext context)
+        private readonly ICacheService _cacheService;
+        public CategoriesController(ApplicationDbContext context, ICacheService cacheService)
         {
             _context = context;
+            _cacheService = cacheService;
         }
         [HttpPost]
         [ClaimRequirement(FunctionCode.MANAGEMENT_CATEGORY, CommandCode.CREATE)]
@@ -51,11 +55,24 @@ namespace ParkingManagement.BackendServer.Controllers
         [ClaimRequirement(FunctionCode.MANAGEMENT_CATEGORY, CommandCode.VIEW)]
         public async Task<IActionResult> GetCategories()
         {
-            var categorys = await _context.Categories.ToListAsync();
+            /* var categorys = await _context.Categories.ToListAsync();
 
-            var categoryvms = categorys.Select(c => CreateCategoryVm(c)).ToList();
+             var categoryvms = categorys.Select(c => CreateCategoryVm(c)).ToList();
 
-            return Ok(categoryvms);
+             return Ok(categoryvms);*/
+            var cachedData = await _cacheService.GetAsync<List<CategoryVm>>(CacheConstants.Categories);
+            if (cachedData == null)
+            {
+                var categorys = await _context.Categories.ToListAsync();
+
+                var categoryVms = categorys.Select(c => CreateCategoryVm(c)).ToList();
+
+                await _cacheService.SetAsync(CacheConstants.Categories, categoryVms,3);
+
+                cachedData = categoryVms;
+            }
+
+            return Ok(cachedData);
         }
 
         [HttpGet("filter")]
